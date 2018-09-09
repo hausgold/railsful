@@ -23,6 +23,15 @@ RSpec.describe Railsful::Deserializer do
     )
   end
 
+  let(:params_with_has_many) do
+    ActionController::Parameters.new(
+      data: {
+        attributes: { foo: 'bar' },
+        relationships: { foo: { data: [{ id: 1 }] } }
+      }
+    )
+  end
+
   let(:params_with_included) do
     ActionController::Parameters.new(
       data: {
@@ -69,6 +78,18 @@ RSpec.describe Railsful::Deserializer do
 
       it 'adds the relationship with _id suffix to hash' do
         expect(deserialized).to eq('foo' => 'bar', 'foo_id' => 1)
+      end
+    end
+
+    context 'when has_many relationship is given' do
+      before do
+        allow(controller)
+          .to receive(:params)
+          .and_return(params_with_has_many)
+      end
+
+      it 'adds the relationship with _id suffix to hash' do
+        expect(deserialized).to eq('foo' => 'bar', 'foo_ids' => [1])
       end
     end
 
