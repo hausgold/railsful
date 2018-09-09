@@ -38,7 +38,7 @@ module Railsful
       # @param options [Hash] The global render options.
       # @return [Boolean] The answer.
       def paginate?(options)
-        params[:page] &&
+        params.dig(:page, :number) &&
           method == 'GET' &&
           relation?(options)
       end
@@ -48,9 +48,9 @@ module Railsful
       # @param relation [ActiveRecord::Relation] The relation.
       # @return [ActiveRecord::Relation] The paginated relation.
       def paginate(relation)
-        per_page = params[:per_page]
+        per_page = params.dig(:page, :size)
 
-        relation = relation.page(params.fetch(:page))
+        relation = relation.page(params.dig(:page, :number))
         relation = relation.per(per_page) if per_page
 
         relation
@@ -59,10 +59,9 @@ module Railsful
       # Create the pagination links
       #
       # @param relation [ActiveRecord::Relation] The relation to be paginated.
-      # @param per_page [Integer] The number of records per page.
       # @return [Hash] The +links+ hash.
       def links(relation)
-        per_page = params[:per_page]
+        per_page = params.dig(:page, :size)
 
         {
           self: collection_url(relation.try(:current_page), per_page),
@@ -79,14 +78,17 @@ module Railsful
       def collection_url(page, per_page)
         return nil unless page
 
+        # Set fallback pagination.
+        # TODO: Get it from the model.
+        per_page ||= 25
+
         # The +#url_for+ method comes from the given controller.
         controller.url_for \
           controller: params[:controller],
           action: params[:action],
           params: {
-            page: page,
-            per_page: per_page
-          }.compact
+            page: { number: page, size: per_page }
+          }
       end
     end
   end

@@ -21,7 +21,7 @@ RSpec.describe Railsful::Serializer do
       end
 
       context 'when pagination params are given' do
-        let(:params) { { page: 1, per_page: 10 } }
+        let(:params) { { page: { number: 1, size: 10 } } }
 
         it 'does nothing' do
           expect(serializer.render(json)).to eq(json)
@@ -29,7 +29,7 @@ RSpec.describe Railsful::Serializer do
       end
 
       context 'when include params are given' do
-        let(:params) { { page: 1, per_page: 10 } }
+        let(:params) { { include: 'address' } }
 
         it 'does nothing' do
           expect(serializer.render(json)).to eq(json)
@@ -50,7 +50,7 @@ RSpec.describe Railsful::Serializer do
       end
 
       context 'when include params are given' do
-        let(:params) { { page: 1, per_page: 10 } }
+        let(:params) { { include: 'address' } }
 
         it 'adds a links key to the options' do
           expect(DummySerializer)
@@ -63,7 +63,7 @@ RSpec.describe Railsful::Serializer do
       end
 
       context 'when pagination include params are given' do
-        let(:params) { { page: 1, per_page: 10 } }
+        let(:params) { { page: { number: 1, size: 10 } } }
 
         before do
           allow(renderable).to receive(:is_a?).and_return(true)
