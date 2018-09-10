@@ -62,6 +62,19 @@ RSpec.describe Railsful::Serializer do
         end
       end
 
+      context 'when wrong pagination params are given' do
+        let(:params) { { page: 1 } }
+
+        before do
+          allow(renderable).to receive(:is_a?).and_return(true)
+        end
+
+        it 'raises an error' do
+          expect { serializer.render(json) }
+            .to raise_error(Railsful::PaginationError)
+        end
+      end
+
       context 'when pagination include params are given' do
         let(:params) { { page: { number: 1, size: 10 } } }
 

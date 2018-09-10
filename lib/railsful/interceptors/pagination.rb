@@ -38,8 +38,8 @@ module Railsful
       # @param options [Hash] The global render options.
       # @return [Boolean] The answer.
       def paginate?(options)
-        params.dig(:page, :number) &&
-          method == 'GET' &&
+        method == 'GET' &&
+          params.fetch(:page, nil) &&
           relation?(options)
       end
 
@@ -48,6 +48,13 @@ module Railsful
       # @param relation [ActiveRecord::Relation] The relation.
       # @return [ActiveRecord::Relation] The paginated relation.
       def paginate(relation)
+        # If page param is not a hash, raise an error.
+        unless params.fetch(:page, nil).is_a?(Hash)
+          raise PaginationError,
+                'Wrong pagination format. Hash expected.'
+        end
+
+        # Get the per page size.
         per_page = params.dig(:page, :size)
 
         relation = relation.page(params.dig(:page, :number))
