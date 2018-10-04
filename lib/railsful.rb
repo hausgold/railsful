@@ -8,6 +8,8 @@ require 'railsful/serializer'
 require 'railsful/deserializable'
 require 'railsful/deserializer'
 
+# This gem provides useful helper methods for developing a restful
+# JSONAPI rails application.
 module Railsful
   # Nothing to do here
 end
