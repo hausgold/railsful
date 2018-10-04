@@ -7,9 +7,14 @@ a restful JSON API compliant Rails application.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add these lines to your application's Gemfile:
 
 ```ruby
+# fast_jsonapi is used to serialize objects.
+gem 'fast_jsonapi'
+# kaminari needed for pagination.
+gem 'kaminari'
+
 gem 'railsful'
 ```
 
@@ -21,21 +26,72 @@ Or install it yourself as:
 
     $ gem install railsful
 
-## Prerequisites/Assumptions
-We assume you have these gems installed in your Rails application.
-
-### [FastJsonapi](https://github.com/Netflix/fast_jsonapi)
-```
-gem 'fast_jsonapi'
-```
-### [Kaminari](https://github.com/kaminari/kaminari)
-```
-gem 'kaminari'
-```
-
 ## Usage
 
-Coming soon...
+### Serialization
+
+In order to serialize your objects it is necessary that their serializer follow
+the same naming convention and modules as the object to be serialized.
+
+``` ruby
+# app/models/some_module/user.rb
+module SomeModule
+  class User
+    ...
+  end
+end
+
+# app/serializers/some_module/user_serializer.rb
+module SomeModule
+  class UserSerializer
+    ...
+  end
+end
+```
+
+After that you can use `render json: ...` without specifying the serializer:
+
+``` ruby
+module SomeModule
+  class UserController
+    def index
+      render json: User.all
+    end
+  end
+end
+```
+
+Will result in:
+
+``` json
+GET /some_module/users
+{
+  "data": [
+    { "type": "user", "id": 1, "attributes": { ... } },
+    { "type": "user", "id": 2, "attributes": { ... } }
+  ]
+}
+```
+
+### Deserialization
+For deserialization of jsonapi compliant request all controllers that
+inherit from `ActionController` can use the `#deserialized_params` method.
+
+``` ruby
+class UsersController < ApplicationController
+  def create
+    user = User.new(user_params)
+
+    # Return success/fail ...
+  end
+
+  private
+
+  def user_params
+    deserialized_params.permit(:first_name, :last_name, ...)
+  end
+end
+```
 
 ## Development
 
