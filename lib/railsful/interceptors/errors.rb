@@ -52,6 +52,8 @@ module Railsful
       #
       # :reek:UtilityFunction
       def errors?(options)
+        return false unless options
+
         options.fetch(:json, nil).is_a?(ActiveModel::Errors)
       end
     end

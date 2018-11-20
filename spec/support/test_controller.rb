@@ -8,7 +8,11 @@ class TestController
   prepend Railsful::Serializable
   include Railsful::Deserializable
 
-  def render(options = nil, extra_options = {}, &block); end
+  def render(options = nil, extra_options = {}, &block)
+    # We just return the options here so we can test
+    # all prepended interceptors.
+    options
+  end
 
   def request
     OpenStruct.new(request_method: 'GET')

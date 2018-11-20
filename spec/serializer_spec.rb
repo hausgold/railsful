@@ -101,8 +101,18 @@ RSpec.describe Railsful::Serializer do
     end
 
     context 'when renderable is an ActiveModel::Errors' do
+      let(:error) { ActiveModel::Errors.new(renderable) }
+      let(:error_hash) do
+        { errors: [{ error: 'must be valid', field: :name, status: '422' }] }
+      end
+
       before do
-        allow(renderable).to receive(:is_a?).with(ActiveModel::Errors) { true }
+        error.add(:name, 'must be valid')
+      end
+
+      it 'renders a jsonapi compliant error' do
+        expect(controller.render(json: error))
+          .to eq(json: error_hash)
       end
     end
   end
