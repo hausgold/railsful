@@ -15,7 +15,7 @@ RSpec.describe Railsful::Serializer do
 
   describe '#render' do
     context 'when renderable is plain JSON' do
-      let(:json) { { json: 'foo'} }
+      let(:json) { { json: 'foo' } }
 
       it 'does nothing' do
         expect(serializer.render(json)).to eq(json)
@@ -67,7 +67,10 @@ RSpec.describe Railsful::Serializer do
         let(:param_hash) { { page: 1 } }
 
         before do
-          allow(renderable).to receive(:is_a?).and_return(true)
+          allow(renderable)
+            .to receive(:is_a?).with(ActiveModel::Errors) { false }
+          allow(renderable)
+            .to receive(:is_a?).with(ActiveRecord::Relation) { true }
         end
 
         it 'raises an error' do
@@ -80,7 +83,10 @@ RSpec.describe Railsful::Serializer do
         let(:param_hash) { { page: { number: 1, size: 10 } } }
 
         before do
-          allow(renderable).to receive(:is_a?).and_return(true)
+          allow(renderable)
+            .to receive(:is_a?).with(ActiveModel::Errors) { false }
+          allow(renderable)
+            .to receive(:is_a?).with(ActiveRecord::Relation) { true }
         end
 
         it 'adds a links key to the options' do
@@ -92,21 +98,11 @@ RSpec.describe Railsful::Serializer do
           serializer.render(json)
         end
       end
+    end
 
-      describe 'errors' do
-        before do
-          allow(renderable).to receive(:errors).and_return([true])
-        end
-
-        it 'does not call the serializer' do
-          expect(DummySerializer).not_to receive(:new)
-          serializer.render(json)
-        end
-
-        it 'replaces the renderable with an errors hash' do
-          expect(serializer.render(json))
-            .to include(json: { errors: [true] })
-        end
+    context 'when renderable is an ActiveModel::Errors' do
+      before do
+        allow(renderable).to receive(:is_a?).with(ActiveModel::Errors) { true }
       end
     end
   end

@@ -13,6 +13,7 @@ module Railsful
         # Check if json value should be paginated.
         return options unless paginate?(options)
 
+
         # Get the relation from options hash so we can paginate it and
         # check the total count.
         relation = options.fetch(:json)
