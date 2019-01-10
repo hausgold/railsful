@@ -23,7 +23,10 @@ module Railsful
         # Create a meta hash
         meta = {
           total_pages: paginated.try(:total_pages),
-          total_count: paginated.try(:total_count)
+          total_count: paginated.try(:total_count),
+          current_page: paginated.try(:current_page),
+          next_page: paginated.try(:next_page),
+          prev_page: paginated.try(:prev_page)
         }
 
         options.deeper_merge(
