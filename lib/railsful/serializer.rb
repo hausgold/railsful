@@ -3,6 +3,7 @@
 require 'railsful/interceptors/errors'
 require 'railsful/interceptors/include'
 require 'railsful/interceptors/pagination'
+require 'railsful/interceptors/sorting'
 
 module Railsful
   # This class allows to encapsulate the interceptor logic from the
@@ -12,6 +13,7 @@ module Railsful
     # All interceptors that provide jsonapi logic.
     prepend Interceptors::Include
     prepend Interceptors::Pagination
+    prepend Interceptors::Sorting
     prepend Interceptors::Errors
 
     attr_reader :controller
