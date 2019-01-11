@@ -15,10 +15,7 @@ module Railsful
         # Get the relation from options hash so we can sort it
         relation = options.fetch(:json)
 
-        # Sort the relation and store new relation in temporary variable.
-        sorted = sort(relation)
-
-        options.merge(json: sorted)
+        options.merge(json: sort(relation))
       end
 
       private
@@ -56,11 +53,12 @@ module Railsful
         order_string = orders.join(", ")
         # support both #reorder and #order call on relation
         if relation.respond_to? :reorder
-          relation.reorder(order_string)
+          return relation.reorder(order_string)
         elsif relation.respond_to? :order
-          relation.order(order_string)
+          return relation.order(order_string)
         end
-        relation
+        raise PaginationError,
+          "Relation does not respond to #reorder or #order."
       end
     end
   end
