@@ -32,6 +32,4 @@ module Railsful
 
   # The error that is raised when pagination fails.
   class PaginationError < Error; end
-  # The error that is raised when sorting fails.
-  class SortingError < Error; end
 end
