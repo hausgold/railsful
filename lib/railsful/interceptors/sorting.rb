@@ -2,8 +2,7 @@
 
 module Railsful
   module Interceptors
-    # Interceptor that paginates a given ActiveRecord::Relation
-    # with help of the Kaminari gem.
+    # Interceptor that sorts a given ActiveRecord::Relation
     module Sorting
       def render(options)
         super(sorting_options(options))
@@ -52,7 +51,7 @@ module Railsful
       # Sort given relation
       #
       # @param relation [ActiveRecord::Relation] The relation.
-      # @return [ActiveRecord::Relation] The paginated relation.
+      # @return [ActiveRecord::Relation] The sorted relation.
       def sort(relation)
         order_string = orders.join(", ")
         # support both #reorder and #order call on relation
