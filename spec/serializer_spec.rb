@@ -89,11 +89,38 @@ RSpec.describe Railsful::Serializer do
             .to receive(:is_a?).with(ActiveRecord::Relation) { true }
         end
 
+        it 'adds a json key to the options' do
+          expect(DummySerializer)
+            .to receive(:new)
+            .with(renderable, hash_including(
+              json: instance_of(Dummy)
+            )).once
+
+          serializer.render(json)
+        end
+
         it 'adds a links key to the options' do
           expect(DummySerializer)
             .to receive(:new)
-            .with(renderable, hash_including(:json, :links, :meta))
-            .once
+            .with(renderable, hash_including(
+              links: { next: nil, prev: nil, self: nil }
+            )).once
+
+          serializer.render(json)
+        end
+
+        it 'adds a meta key to the options' do
+          expect(DummySerializer)
+            .to receive(:new)
+            .with(renderable, hash_including(
+              meta: {
+                current_page: nil,
+                next_page: nil,
+                prev_page: nil,
+                total_count: nil,
+                total_pages: nil
+              }
+            )).once
 
           serializer.render(json)
         end
