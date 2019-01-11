@@ -57,7 +57,7 @@ module Railsful
         elsif relation.respond_to? :order
           return relation.order(order_string)
         end
-        raise PaginationError,
+        raise SortingError,
           "Relation does not respond to #reorder or #order."
       end
     end
