@@ -18,7 +18,7 @@ module Railsful
 
         # Sort the relation and store new relation in temporary variable.
         sorted = sort(relation)
-        
+
         options.merge(json: sorted)
       end
 
@@ -32,17 +32,20 @@ module Railsful
         method == 'GET' && relation?(options) && params.fetch(:sort, nil)
       end
 
+      # Format a sort string to a database friendly order string
+      #
+      # @return [String] database order query e.g. 'name DESC'
+      def order(string)
+        string.start_with?("-") ? "#{string[1..-1]} DESC" : "#{string} ASC"
+      end
+
       # Map the sort params to a database friendly set of strings
       #
       # @return [Array] Array of string e.g. ['name DESC', 'age ASC']
-      def order_attributes
-        params.fetch(:sort).split(",").map do |attribute|
-          next unless attribute =~ /\A-?\w+\z/ # allow only word chars
-          if attribute.start_with?("-")
-            "#{attribute[1..-1]} DESC"
-          else
-            "#{attribute} ASC"
-          end
+      def orders
+        params.fetch(:sort).split(",").map do |string|
+          next unless string =~ /\A-?\w+\z/ # allow only word chars
+          order(string)
         end.compact
       end
 
@@ -51,7 +54,7 @@ module Railsful
       # @param relation [ActiveRecord::Relation] The relation.
       # @return [ActiveRecord::Relation] The paginated relation.
       def sort(relation)
-        order_string = order_attributes.join(", ")
+        order_string = orders.join(", ")
         # support both #reorder and #order call on relation
         if relation.respond_to? :reorder
           relation.reorder(order_string)
