@@ -27,6 +27,5 @@ end
 
 # Test serializer for Foo class
 class DummySerializer
-  def initialize(*args)
-  end
+  def initialize(*_args); end
 end

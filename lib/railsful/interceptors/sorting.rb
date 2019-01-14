@@ -31,16 +31,19 @@ module Railsful
       # Format a sort string to a database friendly order string
       #
       # @return [String] database order query e.g. 'name DESC'
+      #
+      # :reek:UtilityFunction
       def order(string)
-        string.start_with?("-") ? "#{string[1..-1]} DESC" : "#{string} ASC"
+        string.start_with?('-') ? "#{string[1..-1]} DESC" : "#{string} ASC"
       end
 
       # Map the sort params to a database friendly set of strings
       #
       # @return [Array] Array of string e.g. ['name DESC', 'age ASC']
       def orders
-        params.fetch(:sort).split(",").map do |string|
+        params.fetch(:sort).split(',').map do |string|
           next unless string =~ /\A-?\w+\z/ # allow only word chars
+
           order(string)
         end.compact
       end
@@ -50,15 +53,12 @@ module Railsful
       # @param relation [ActiveRecord::Relation] The relation.
       # @return [ActiveRecord::Relation] The sorted relation.
       def sort(relation)
-        order_string = orders.join(", ")
+        order_string = orders.join(', ')
         # support both #reorder and #order call on relation
-        if relation.respond_to? :reorder
-          return relation.reorder(order_string)
-        elsif relation.respond_to? :order
-          return relation.order(order_string)
-        end
-        raise SortingError,
-          "Relation does not respond to #reorder or #order."
+        return relation.reorder(order_string) if relation.respond_to?(:reorder)
+        return relation.order(order_string) if relation.respond_to?(:order)
+
+        raise SortingError, 'Relation does not respond to #reorder or #order.'
       end
     end
   end

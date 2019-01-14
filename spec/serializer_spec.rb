@@ -101,7 +101,7 @@ RSpec.describe Railsful::Serializer do
 
       context 'when sort params are given' do
         let(:param_hash) { { sort: 'name,-age,-?/,(§)' } }
-        let(:order_string) { "name ASC, age DESC" }
+        let(:order_string) { 'name ASC, age DESC' }
 
         before do
           allow(renderable)
@@ -117,6 +117,13 @@ RSpec.describe Railsful::Serializer do
             .once
 
           serializer.render(json)
+        end
+
+        context 'when relation does not respond to #reorder or #order' do
+          it 'raises a SortingError' do
+            expect { serializer.render(json) }
+              .to raise_error(Railsful::SortingError)
+          end
         end
       end
     end
