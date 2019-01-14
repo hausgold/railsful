@@ -25,7 +25,7 @@ module Railsful
       # @param options [Hash] The global render options.
       # @return [Boolean] The answer.
       def sort?(options)
-        method == 'GET' && params.fetch(:sort, nil) && relation?(options)
+        method == 'GET' && params.fetch(:sort, false) && relation?(options)
       end
 
       # Format a sort string to a database friendly order string

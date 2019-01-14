@@ -39,7 +39,7 @@ module Railsful
       # @return [Boolean] The answer.
       def paginate?(options)
         method == 'GET' &&
-          params.fetch(:page, nil) &&
+          params.fetch(:page, false) &&
           relation?(options)
       end
 
