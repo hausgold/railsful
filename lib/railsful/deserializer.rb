@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require 'deep_merge/rails_compat'
+require 'active_support/inflector'
 
 module Railsful
+  # The deserializer class handles the "unwrapping" of incoming parameters.
+  # It translates jsonapi compliant params to those that Rails understands.
   class Deserializer
     attr_reader :params
 
@@ -43,11 +46,19 @@ module Railsful
         attrs = inc[:attributes]
 
         if params.dig(:data, :relationships, type, :data).is_a?(Array)
-          # TODO: Pluralize the key here.
-          included_hash["#{type}_attributes"] ||= []
-          included_hash["#{type}_attributes"] << attrs
+          # We pluralize the type since we are dealing with a
+          # +has_many+ relationship.
+          plural = ActiveSupport::Inflector.pluralize(type)
+
+          included_hash["#{plural}_attributes"] ||= []
+          included_hash["#{plural}_attributes"] << attrs
         else
-          included_hash["#{type}_attributes"] = attrs
+          # When the data value is not an Array we are assuming that we
+          # deal with a +has_one+ association. To be on the safe side we also
+          # call singularize on the type.
+          singular = ActiveSupport::Inflector.singularize(type)
+
+          included_hash["#{singular}_attributes"] = attrs
         end
       end
 
