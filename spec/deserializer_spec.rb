@@ -44,6 +44,18 @@ RSpec.describe Railsful::Deserializer do
     )
   end
 
+  let(:params_with_included_has_many) do
+    ActionController::Parameters.new(
+      data: {
+        attributes: { foo: 'bar' },
+        relationships: { post: { data: [{ tempid: 1 }] } }
+      },
+      included: [
+        { type: 'post', tempid: 1, attributes: { text: 'Hello Post!' } }
+      ]
+    )
+  end
+
   describe '#deserialized_params' do
     context 'when params are empty' do
       before do
@@ -93,7 +105,7 @@ RSpec.describe Railsful::Deserializer do
       end
     end
 
-    context 'when included is given' do
+    context 'when included (has_one) is given' do
       before do
         allow(controller)
           .to receive(:params)
@@ -104,6 +116,21 @@ RSpec.describe Railsful::Deserializer do
         expect(deserialized).to eq(
           'foo' => 'bar',
           'address_attributes' => { 'street' => 'foobar st. 1' }
+        )
+      end
+    end
+
+    context 'when included (has_many) is given' do
+      before do
+        allow(controller)
+          .to receive(:params)
+          .and_return(params_with_included_has_many)
+      end
+
+      it 'adds the included with _attributes suffix' do
+        expect(deserialized).to eq(
+          'foo' => 'bar',
+          'posts_attributes' => [{ 'text' => 'Hello Post!' }]
         )
       end
     end
