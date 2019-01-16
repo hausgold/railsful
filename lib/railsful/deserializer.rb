@@ -17,17 +17,8 @@ module Railsful
     #
     # :reek:FeatureEnvy
     def deserialize
-      deserialized = {}
-
-      data = params.fetch(:data, {})
-
-      # Merge the resources attributes
-      deserialized.merge!(data.fetch(:attributes, {}))
-
-      # Get the already existing relationships
-      data.fetch(:relationships, {}).each do |type, payload|
-        deserialized.merge!(relationship(type, payload))
-      end
+      # Fetch attributes including resource id.
+      deserialized = attributes(params)
 
       # Get the included elements.
       deserialized.deeper_merge!(included_hash(params))
@@ -36,8 +27,28 @@ module Railsful
       ActionController::Parameters.new(deserialized)
     end
 
+    # First level attributes from data object.
+    #
+    # :reek:FeatureEnvy
+    def attributes(params)
+      data = params.fetch(:data, {})
+
+      # Merge the resources attributes. Also merge the id since jsonapi does
+      # not allow ids in the attribute body.
+      attrs = data.fetch(:attributes, {}).merge(id: data[:id])
+
+      # Get the already existing relationships
+      data.fetch(:relationships, {}).each do |type, payload|
+        attrs.merge!(relationship(type, payload))
+      end
+
+      attrs.compact
+    end
+
     # Fetches all included associations/relationships from the
     # included hash.
+    #
+    # :reek:UtilityFunction
     def included_hash(params)
       included_hash = {}
 

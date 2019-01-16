@@ -47,6 +47,7 @@ RSpec.describe Railsful::Deserializer do
   let(:params_with_included_has_many) do
     ActionController::Parameters.new(
       data: {
+        id: 1,
         attributes: { foo: 'bar' },
         relationships: { post: { data: [{ tempid: 1 }] } }
       },
@@ -129,6 +130,7 @@ RSpec.describe Railsful::Deserializer do
 
       it 'adds the included with _attributes suffix' do
         expect(deserialized).to eq(
+          'id' => 1,
           'foo' => 'bar',
           'posts_attributes' => [{ 'text' => 'Hello Post!' }]
         )
