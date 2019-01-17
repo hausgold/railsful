@@ -49,7 +49,10 @@ RSpec.describe Railsful::Deserializer do
       data: {
         id: 1,
         attributes: { foo: 'bar' },
-        relationships: { post: { data: [{ tempid: 1 }] } }
+        relationships: {
+          posts: { data: [{ type: 'post', tempid: 1 }] },
+          address: { data: { type: 'address', id: 1 } }
+        }
       },
       included: [
         { type: 'post', tempid: 1, attributes: { text: 'Hello Post!' } }
@@ -132,7 +135,8 @@ RSpec.describe Railsful::Deserializer do
         expect(deserialized).to eq(
           'id' => 1,
           'foo' => 'bar',
-          'posts_attributes' => [{ 'text' => 'Hello Post!' }]
+          'posts_attributes' => [{ 'text' => 'Hello Post!' }],
+          'address_id' => 1
         )
       end
     end

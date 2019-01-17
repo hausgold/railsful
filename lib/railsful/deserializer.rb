@@ -29,6 +29,8 @@ module Railsful
 
     # First level attributes from data object.
     #
+    # @return [Hash]
+    #
     # :reek:FeatureEnvy
     def attributes(params)
       data = params.fetch(:data, {})
@@ -48,32 +50,62 @@ module Railsful
     # Fetches all included associations/relationships from the
     # included hash.
     #
+    # @return [Hash]
+    #
     # :reek:UtilityFunction
+    # :reek:FeatureEnvy
     def included_hash(params)
-      included_hash = {}
+      # Gather all necessary data we are working on.
+      included = params.fetch(:included, [])
+      relationships = params.fetch(:data, {}).fetch(:relationships, {})
 
-      params.fetch(:included, []).each do |inc|
-        type = inc[:type].to_sym
-        attrs = inc[:attributes]
+      result = {}
 
-        if params.dig(:data, :relationships, type, :data).is_a?(Array)
-          # We pluralize the type since we are dealing with a
-          # +has_many+ relationship.
-          plural = ActiveSupport::Inflector.pluralize(type)
+      # Make sure that both +included+ and +relationships+ are given.
+      # Otherwise we can't do anything and return an empty hash.
+      return result if included.empty? || relationships.empty?
 
-          included_hash["#{plural}_attributes"] ||= []
-          included_hash["#{plural}_attributes"] << attrs
+      # Iterate over all relationships.
+      relationships.each do |type, payload|
+        # Get the data value.
+        data = payload[:data]
+
+        # Check if we are dealing with a +has_many+ (Array) or +belongs_to+
+        # (Hash) relationship.
+        if data.is_a?(Array)
+          result["#{type}_attributes"] = []
+
+          data.each do |element|
+            result["#{type}_attributes"] << get_included(element, included)
+          end
+
+          # Remove all nil includes.
+          result["#{type}_attributes"].compact!
         else
-          # When the data value is not an Array we are assuming that we
-          # deal with a +has_one+ association. To be on the safe side we also
-          # call singularize on the type.
-          singular = ActiveSupport::Inflector.singularize(type)
-
-          included_hash["#{singular}_attributes"] = attrs
+          result["#{type}_attributes"] = get_included(data, included)
         end
       end
 
-      included_hash
+      # Remove all nil includes.
+      result.compact
+    end
+
+    # Fetch the included object for a given relationship.
+    #
+    # @return [Hash, NilClass] The extracted included hash.
+    #
+    # :reek:UtilityFunction
+    def get_included(relation, included)
+      # Return the attributes of the last found element. But there SHOULD only
+      # be one element with the same tempid. If there is a mistake by the client
+      # we always take the last.
+      found = included.reverse
+                      .detect { |inc| inc[:tempid] == relation[:tempid] }
+
+      return nil unless found
+
+      # Return the attributes of the found include hash or an empty hash.
+      found.fetch(:attributes, {})
     end
 
     def relationship(type, payload)
