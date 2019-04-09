@@ -1,6 +1,9 @@
 # Railsful
-[![Maintainability](https://api.codeclimate.com/v1/badges/d1e81476a4c63779815e/maintainability)](https://codeclimate.com/github/hausgold/railsful/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/d1e81476a4c63779815e/test_coverage)](https://codeclimate.com/github/hausgold/railsful/test_coverage)
+
+[![Build Status](https://travis-ci.com/hausgold/railsful.svg?branch=master)](https://travis-ci.com/hausgold/railsful)
+[![Maintainability](https://api.codeclimate.com/v1/badges/280110b88c5de6b6c472/maintainability)](https://codeclimate.com/repos/5cac8bcf6969c376b7007d57/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/280110b88c5de6b6c472/test_coverage)](https://codeclimate.com/repos/5cac8bcf6969c376b7007d57/test_coverage)
+[![API docs](https://img.shields.io/badge/docs-API-blue.svg)](https://www.rubydoc.info/gems/railsful)
 
 A small but helpful collection of concerns and tools to create
 a restful JSON API compliant Rails application.
