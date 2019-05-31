@@ -77,6 +77,13 @@ GET /some_module/users
 }
 ```
 
+If you want to use another serializer you can do this by specifying a
+`serializer` key inside the options:
+
+``` ruby
+render json: User.first, serializer: 'author'
+```
+
 ### Deserialization
 For deserialization of jsonapi compliant request all controllers that
 inherit from `ActionController` can use the `#deserialized_params` method.

@@ -29,3 +29,8 @@ end
 class DummySerializer
   def initialize(*_args); end
 end
+
+# An other test serializer class
+class AnotherDummySerializer
+  def initialize(*_args); end
+end

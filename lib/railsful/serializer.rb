@@ -39,7 +39,7 @@ module Railsful
       return options unless renderable
 
       # Try to fetch the right serializer for given renderable.
-      serializer = serializer_for(renderable)
+      serializer = serializer_for(renderable, options)
 
       # When no serializer is found just pass the original options hash.
       return options unless serializer
@@ -49,12 +49,34 @@ module Railsful
     end
 
     # Find the right serializer for given object.
+    # First we will look if the options hash includes a serializer. If not,
+    # we try to guess the right serializer from the model/class name.
     #
-    # @param [ApplicationRecord, ActiveRecord::Relation]
+    # @param renderable [ApplicationRecord, ActiveRecord::Relation]
+    # @param options [Hash]
     # @return [Class] The serializer class.
     #
     # :reek:UtilityFunction
-    def serializer_for(renderable)
+    def serializer_for(renderable, options = {})
+      serializer_by_options(options) || serializer_by_renderable(renderable)
+    end
+
+    # Check the options hash for a serializer key.
+    #
+    # @return [Class] The serializer class.
+    #
+    # :reek:UtilityFunction
+    def serializer_by_options(options)
+      serializer = options[:serializer]
+      return unless serializer
+
+      "#{serializer.to_s.classify}Serializer".safe_constantize
+    end
+
+    # @return [Class] The serializer class.
+    #
+    # :reek:UtilityFunction
+    def serializer_by_renderable(renderable)
       # Get the class in order to find the right serializer.
       klass = if renderable.is_a?(ActiveRecord::Relation)
                 renderable.model.name

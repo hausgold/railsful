@@ -153,6 +153,16 @@ RSpec.describe Railsful::Serializer do
           end
         end
       end
+
+      context 'when a serializer is given via options' do
+        let(:options) { { json: renderable, serializer: 'another_dummy' } }
+
+        it 'uses the defined serializer' do
+          expect(AnotherDummySerializer).to receive(:new)
+
+          serializer.render(options)
+        end
+      end
     end
 
     context 'when renderable is an ActiveModel::Errors' do
