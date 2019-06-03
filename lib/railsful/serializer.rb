@@ -70,6 +70,9 @@ module Railsful
       serializer = options[:serializer]
       return unless serializer
 
+      # If the given serializer is a class return it.
+      return serializer if serializer.is_a? Class
+
       "#{serializer.to_s.classify}Serializer".safe_constantize
     end
 

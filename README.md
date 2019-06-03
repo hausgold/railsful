@@ -82,6 +82,10 @@ If you want to use another serializer you can do this by specifying a
 
 ``` ruby
 render json: User.first, serializer: 'author'
+
+# or
+
+render json: User.first, serializer: AuthorSerializer
 ```
 
 ### Deserialization

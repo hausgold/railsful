@@ -162,6 +162,18 @@ RSpec.describe Railsful::Serializer do
 
           serializer.render(options)
         end
+
+        context 'when the class is given' do
+          before do
+            options.merge(serializer: AnotherDummySerializer)
+          end
+
+          it 'uses the class' do
+            expect(AnotherDummySerializer).to receive(:new)
+
+            serializer.render(options)
+          end
+        end
       end
     end
 
